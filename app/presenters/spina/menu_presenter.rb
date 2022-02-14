@@ -13,7 +13,7 @@ module Spina
                     :link_tag_css,
                     :include_drafts,
                     :depth, # root nodes are at depth 0
-                    :active_page_css
+                    :active_list_item_css
 
     # Default configuration
     self.menu_tag = :nav
@@ -54,12 +54,12 @@ module Spina
         return nil unless item.materialized_path
         children = scoped_collection(item.children)
 
-        active_css = nil
-        if item == Spina::Current.page
-          active_css = self.active_page_css
+        active_item_css = nil
+        if item == Spina::Current.page && self.active_list_item_css.present?
+          active_item_css = self.active_list_item_css
         end
 
-        content_tag(list_item_tag, class: active_css || list_item_css, data: { page_id: item.page_id, draft: (true if item.draft?) }) do
+        content_tag(list_item_tag, class: active_item_css || list_item_css, data: { page_id: item.page_id, draft: (true if item.draft?) }) do
           buffer = ActiveSupport::SafeBuffer.new
           buffer << link_to(item.menu_title, item.materialized_path, class: link_tag_css)
           buffer << render_items(children) if render_children?(item) && children.any?
